@@ -5,6 +5,9 @@ Author: Nasir Bilal
 Email: nbilal@paloaltonetworks.com
 """
 
+##############################################################
+# IMPORTS
+##############################################################
 import xmltodict
 from ipaddress import ip_network, ip_address
 import re
@@ -13,8 +16,12 @@ import logging
 from copy import copy
 
 
-PAN_CFG_FILE = 'Inputs/get_config_panorama.xml'
-DEVICE_GROUP = 'Crewe'
+
+##############################################################
+# GLOBAL VARIABLES
+##############################################################
+PAN_CFG_FILE = 'panorama_config.xml'
+DEVICE_GROUP = 'DG_01'
 
 
 ##############################################################
@@ -184,6 +191,9 @@ def resolve_service(service, pan_cfg):
 
 
 
+##############################################################
+# MAIN FUNCTION
+##############################################################
 def main():
 
     # Initialize log file for exceptions
@@ -296,6 +306,9 @@ def main():
     wb.save('{}_rules.xlsx'.format(DEVICE_GROUP))
 
 
+##############################################################
+# RUN IT!
+##############################################################
 if __name__ == '__main__':
     main()
 
