@@ -8,25 +8,38 @@ Email: nbilal@paloaltonetworks.com
 ##############################################################
 # IMPORTS
 ##############################################################
+from utils.config import Config
 import xmltodict
+import requests
 from ipaddress import ip_network, ip_address
 import re
 from openpyxl import Workbook
 import logging
 from copy import copy
 
-
-
 ##############################################################
 # GLOBAL VARIABLES
 ##############################################################
-PAN_CFG_FILE = 'panorama_config.xml'
-DEVICE_GROUP = 'DG_01'
+PAN_CFG_FILE = 'get_config_panorama.xml'
+DEVICE_GROUP = 'child_dg_lab01'
 
 
 ##############################################################
 # FUNCTIONS
 ##############################################################
+def get_config(url: str, api_key: str) -> str:
+    get_call_dict = {
+        'key': api_key,
+        'type': 'config',
+        'action': 'show',
+    }
+    try:
+        r = requests.get(url, get_call_dict, verify=False)
+        return r.text
+    except BaseException as e:
+        return f"Failed to retrieve configuration due to {e}"
+
+
 def flatten(c: list) -> list:
     if not isinstance(c, str):
         for i in c:
@@ -41,15 +54,15 @@ def flatten(c: list) -> list:
 
 def validate_ip(address: str) -> bool:
     try:
-        ipaddress.ip_network(address)
+        ip_network(address)
         return True
     except ValueError:
         return False
 
 
-def findIPs(start: str, end: str) -> list:
-    start = ipaddress.ip_address(start)
-    end = ipaddress.ip_address(end)
+def extract_ip_range(start: str, end: str) -> list:
+    start = ip_address(start)
+    end = ip_address(end)
     result = []
     while start <= end:
         result.append(str(start))
@@ -69,22 +82,33 @@ def resolve_address(address: str, pan_cfg: dict) -> list:
     elif address in ('panw-highrisk-ip-list', 'panw-known-ip-list'):
         return ['dynamic']
     else:
-        sh_add_tree = pan_cfg['config']['shared']['address']['entry']
-        sh_ag_tree = pan_cfg['config']['shared']['address-group']['entry']
-        sh_edl_tree = pan_cfg['config']['shared']['external-list']['entry']
+        sh_add_tree = pan_cfg['config']['shared'].get('address', {}).get('entry')
+        sh_ag_tree = pan_cfg['config']['shared'].get('address-group', {}).get('entry')
+        sh_edl_tree = pan_cfg['config']['shared'].get('external-list', {}).get('entry')
         device_groups = pan_cfg['config']['devices']['entry']['device-group']['entry']
         dg_tree = [a for a in device_groups if a['@name'] == DEVICE_GROUP][0]
-        dg_add_tree = dg_tree['address']['entry']
-        dg_ag_tree = dg_tree['address-group']['entry']
+        dg_add_tree = dg_tree.get('address', {}).get('entry')
+        dg_ag_tree = dg_tree.get('address-group', {}).get('entry')
 
         try:
             if dg_tree.get('external-list', {}).get('entry'):
-                for edl in dg_tree['external-list']['entry']:
-                    if edl['@name'] == address:
-                        return ['dynamic']
+                dg_edls = dg_tree.get('external-list', {}).get('entry')
+                if type(dg_edls) == list:
+                    for edl in dg_edls:
+                        if edl['@name'] == address:
+                            return ['dynamic']
+                else:
+                    if dg_edls.get('@name'):
+                        if dg_edls['@name'] == address:
+                            return ['dynamic']
             if pan_cfg['config']['shared']['external-list'].get('entry'):
-                for edl in pan_cfg['config']['shared']['external-list']['entry']:
-                    if edl['@name'] == address:
+                sh_edls = pan_cfg['config']['shared']['external-list']['entry']
+                if type(sh_edls) == list:
+                    for edl in sh_edls:
+                        if edl['@name'] == address:
+                            return ['dynamic']
+                else:
+                    if sh_edls['@name'] == address:
                         return ['dynamic']
             if dg_add_tree:
                 for add in dg_add_tree:
@@ -92,7 +116,7 @@ def resolve_address(address: str, pan_cfg: dict) -> list:
                         if add.get('ip-netmask'):
                             addr = add.get('ip-netmask')
                         elif add.get('ip-range'):
-                            addr = findIPs(*add.get('ip-range').split('-'))
+                            addr = extract_ip_range(*add.get('ip-range').split('-'))
                         elif add.get('fqdn'):
                             addr = 'dynamic'
                         return [addr]
@@ -114,21 +138,28 @@ def resolve_address(address: str, pan_cfg: dict) -> list:
 
         try:
             if dg_ag_tree:
-                for add in dg_ag_tree:
-                    if add['@name'] == address:
-                        return add.get('static', {}).get('member')
+                if type(dg_add_tree) == list:
+                    for add in dg_ag_tree:
+                        if add['@name'] == address:
+                            return add.get('static', {}).get('member')
+                else:
+                    if dg_ag_tree['@name'] == address:
+                        return dg_ag_tree('static', {}).get('member')
         except BaseException as e:
             logging.exception("Unable to search dg_ag_tree due to {}".format(e))
         try:
             if sh_ag_tree:
-                for add in sh_ag_tree:
-                    if add['@name'] == address:
-                        return add.get('static', {}).get('member')
+                if type(sh_ag_tree) == list:
+                    for add in sh_ag_tree:
+                        if add['@name'] == address:
+                            return add.get('static', {}).get('member')
+                else:
+                    if sh_ag_tree['@name'] == address:
+                        sh_ag_tree.get('static', {}).get('member')
         except BaseException as e:
             logging.exception("Unable to search sh_ag_tree due to {}".format(e))
 
         return ['unknown']
-
 
 
 def resolve_service(service: str, pan_cfg: dict) -> list:
@@ -138,15 +169,15 @@ def resolve_service(service: str, pan_cfg: dict) -> list:
     :param pan_cfg: nested dictionary built from address section of PANOS XML
     :return: protocol_port value for given service if found, else 'unknown'
     """
-    if service == 'any' or service == 'application-default' or bool(re.search(r'(tcp|udp)_\d+$', str(service))):
+    if service == 'any' or service == 'application-default' or bool(re.search(r'(^tcp|udp)_\d+$', str(service))):
         return [service]
     else:
-        sh_svc_tree = pan_cfg['config']['shared']['service']['entry']
-        sh_sg_tree = pan_cfg['config']['shared']['service-group']['entry']
+        sh_svc_tree = pan_cfg['config']['shared'].get('service', {}).get('entry')
+        sh_sg_tree = pan_cfg['config']['shared'].get('service-group', {}).get('entry')
         device_groups = pan_cfg['config']['devices']['entry']['device-group']['entry']
         dg_tree = [a for a in device_groups if a['@name'] == DEVICE_GROUP][0]
-        dg_svc_tree = dg_tree['service']['entry']
-        dg_sg_tree = dg_tree['service-group']['entry']
+        dg_svc_tree = dg_tree.get('service', {}).get('entry')
+        dg_sg_tree = dg_tree.get('service-group', {}).get('entry')
         try:
             if dg_svc_tree:
                 for svc in dg_svc_tree:
@@ -194,12 +225,14 @@ def resolve_service(service: str, pan_cfg: dict) -> list:
 # MAIN FUNCTION
 ##############################################################
 def main():
-
     # Initialize log file for exceptions
     logging.basicConfig(level=logging.INFO, filename='exceptions.log')
 
+    # # Retrieve configuration from live Panorama
+    # pan_cfg = xmltodict.parse(get_config(Config.URL, Config.API_KEY))
+
     with open(PAN_CFG_FILE, 'r') as f:
-        pan_cfg = xmltodict.parse(f.read())
+        pan_cfg = xmltodict.parse(f.read())['response']['result']
 
     device_groups = pan_cfg['config']['devices']['entry']['device-group']['entry']
     dg_tree = [a for a in device_groups if a['@name'] == DEVICE_GROUP][0]
@@ -264,7 +297,8 @@ def main():
                     dst = list(flatten(dst))
 
             # Resolve services to a list of ports
-            port_check = lambda x: x in ('any', 'unknown', 'application-default') or bool(re.search(r'(tcp|udp)_[\d\-,]+$', str(x))) or not x
+            port_check = lambda x: x in ('any', 'unknown', 'application-default') or bool(
+                re.search(r'(^tcp|udp)_[\d\-,]+$', str(x))) or not x
             if type(r['service']) == list:
                 dport = copy(r['service'][0].get('member'))
             else:
@@ -277,7 +311,7 @@ def main():
                             dp = resolve_service(dp, pan_cfg)
                             dp_list.append(dp)
                         dport = list(dp_list)
-                    # Otherwise, try to resolve single address in "source" field into list of one IP
+                    # Otherwise, try to resolve single service/service-group to list of ports
                     else:
                         dport = resolve_service(dport, pan_cfg)
                     dport = list(flatten(dport))
