@@ -27,7 +27,7 @@ DEVICE_GROUP = 'DG_01'
 ##############################################################
 # FUNCTIONS
 ##############################################################
-def flatten(c):
+def flatten(c: list) -> list:
     if not isinstance(c, str):
         for i in c:
             if hasattr(i, '__iter__'):
@@ -39,17 +39,17 @@ def flatten(c):
         yield c
 
 
-def validate_ip(address):
+def validate_ip(address: str) -> bool:
     try:
-        ip_network(address)
+        ipaddress.ip_network(address)
         return True
     except ValueError:
         return False
 
 
-def findIPs(start, end):
-    start = ip_address(start)
-    end = ip_address(end)
+def findIPs(start: str, end: str) -> list:
+    start = ipaddress.ip_address(start)
+    end = ipaddress.ip_address(end)
     result = []
     while start <= end:
         result.append(str(start))
@@ -57,7 +57,7 @@ def findIPs(start, end):
     return result
 
 
-def resolve_address(address, pan_cfg):
+def resolve_address(address: str, pan_cfg: dict) -> list:
     """
     Queries address-group for object matching this string.
     :param address: address object being searched for
@@ -127,11 +127,11 @@ def resolve_address(address, pan_cfg):
         except BaseException as e:
             logging.exception("Unable to search sh_ag_tree due to {}".format(e))
 
-        return 'unknown'
+        return ['unknown']
 
 
 
-def resolve_service(service, pan_cfg):
+def resolve_service(service: str, pan_cfg: dict) -> list:
     """
     Queries services and service-groups for object matching this string.
     :param service: address object being searched for
@@ -139,7 +139,7 @@ def resolve_service(service, pan_cfg):
     :return: protocol_port value for given service if found, else 'unknown'
     """
     if service == 'any' or service == 'application-default' or bool(re.search(r'(tcp|udp)_\d+$', str(service))):
-        return service
+        return [service]
     else:
         sh_svc_tree = pan_cfg['config']['shared']['service']['entry']
         sh_sg_tree = pan_cfg['config']['shared']['service-group']['entry']
@@ -187,8 +187,7 @@ def resolve_service(service, pan_cfg):
         except BaseException as e:
             logging.exception("Unable to search dg_ag_tree due to {}".format(e))
 
-        return 'unknown'
-
+        return ['unknown']
 
 
 ##############################################################
@@ -307,8 +306,7 @@ def main():
 
 
 ##############################################################
-# RUN IT!
+# RUN IT
 ##############################################################
 if __name__ == '__main__':
     main()
-
