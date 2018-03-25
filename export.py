@@ -42,20 +42,20 @@ def get_config(url: str, api_key: str) -> str:
 
 
 def flatten(c: list) -> list:
-    #
+    # Checks if input is a list and returns the value.
     if not isinstance(c, str):
         for i in c:
-            try:
-                if i.__iter__:
-                    for j in flatten(i):
-                        yield j
-            except AttributeError:
+            if hasattr(i, '__iter__'):
+                for j in flatten(i):
+                    yield j
+            else:
                 yield i
     else:
         yield c
 
 
 def validate_ip(address: str) -> bool:
+    # Validates the IP address.
     try:
         ip_network(address)
         return True
@@ -64,6 +64,7 @@ def validate_ip(address: str) -> bool:
 
 
 def extract_ip_range(start: str, end: str) -> list:
+    # If IP address is a range, extracts and returns the range.
     start = ip_address(start)
     end = ip_address(end)
     result = []
@@ -74,12 +75,8 @@ def extract_ip_range(start: str, end: str) -> list:
 
 
 def resolve_address(address: str, pan_cfg: dict) -> list:
-    """
-    Queries address-group for object matching this string.
-    :param address: address object being searched for
-    :param add_tree: etree built from address section of PANOS XML
-    :return: string of object's IP address
-    """
+    # Queries address-group for object matching this string.
+
     if address in ('any', 'dynamic', 'unknown') or validate_ip(address):
         return [address]
     elif address in ('panw-highrisk-ip-list', 'panw-known-ip-list'):
@@ -166,12 +163,8 @@ def resolve_address(address: str, pan_cfg: dict) -> list:
 
 
 def resolve_service(service: str, pan_cfg: dict) -> list:
-    """
-    Queries services and service-groups for object matching this string.
-    :param service: address object being searched for
-    :param pan_cfg: nested dictionary built from address section of PANOS XML
-    :return: protocol_port value for given service if found, else 'unknown'
-    """
+    # Queries services and service-groups for object matching this string.
+
     if service == 'any' or service == 'application-default' or bool(re.search(r'(^tcp|udp)_\d+$', str(service))):
         return [service]
     else:
