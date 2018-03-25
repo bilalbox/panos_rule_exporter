@@ -18353,6 +18353,12 @@
                                         <member>udp_4500</member>
                                     </members>
                                 </entry>
+                                <entry name="sg_nested_mix_01">
+                                    <members>
+                                        <member>sg_udpports_01</member>
+                                        <member>sg_randomtcp_01</member>
+                                    </members>
+                                </entry>
                             </service-group>
                             <post-rulebase>
                                 <security>
