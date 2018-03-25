@@ -1,5 +1,8 @@
-from export import validate_ip
 import logging
+from sys import path
+path.append('..')
+from export import validate_ip
+
 
 # Disable logging of all severity level 'CRITICAL' and below
 logging.disable(logging.CRITICAL)
