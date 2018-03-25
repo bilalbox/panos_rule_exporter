@@ -28,6 +28,7 @@ DEVICE_GROUP = 'child_dg_lab01'
 # FUNCTIONS
 ##############################################################
 def get_config(url: str, api_key: str) -> str:
+    # Returns API response as a string.
     get_call_dict = {
         'key': api_key,
         'type': 'config',
@@ -41,12 +42,14 @@ def get_config(url: str, api_key: str) -> str:
 
 
 def flatten(c: list) -> list:
+    #
     if not isinstance(c, str):
         for i in c:
-            if hasattr(i, '__iter__'):
-                for j in flatten(i):
-                    yield j
-            else:
+            try:
+                if i.__iter__:
+                    for j in flatten(i):
+                        yield j
+            except AttributeError:
                 yield i
     else:
         yield c
