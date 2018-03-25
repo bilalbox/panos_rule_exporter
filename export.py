@@ -256,9 +256,6 @@ def main():
     # Initialize log file for exceptions
     logging.basicConfig(level=logging.INFO, filename='exceptions.log')
 
-    # # Retrieve configuration from live Panorama
-    # pan_cfg = xmltodict.parse(get_config(Config.URL, Config.API_KEY))
-
     with open(PAN_CFG_FILE, 'r') as f:
         pan_cfg = xmltodict.parse(f.read())['response']['result']
 
