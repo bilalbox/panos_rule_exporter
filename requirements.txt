@@ -4,3 +4,5 @@ requests
 pytz
 pytest
 flask
+flask-excel
+pyexcel-xlsx
