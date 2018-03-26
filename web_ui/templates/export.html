@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div id="scoped-content">
+
+    <style type="text/css" scoped>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+    </style>
+
+
+    <h1>RULEBASE FOR {{ chosen_dg }}</h1>
+
+    <table style="width:100%">
+        <tr>
+            <th>NAME</th>
+            <th>FROM</th>
+            <th>SOURCE</th>
+            <th>(RESOLVED)</th>
+            <th>TO</th>
+            <th>DESTINATION</th>
+            <th>(RESOLVED)</th>
+            <th>APP</th>
+            <th>SERVICE</th>
+            <th>(RESOLVED)</th>
+            <th>CATEGORY</th>
+            <th>ACTION</th>
+            <th>PROFILE-SETTING</th>
+            <th>LOG-SETTING</th>
+        </tr>
+    {% for row in rows %}
+        <tr>
+            {% for td in row %}
+            <td>{{ td }}</td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </table>
+    </div>
+{% endblock %}

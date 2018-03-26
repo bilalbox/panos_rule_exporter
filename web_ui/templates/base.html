@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% if title %}
+        <title>{{ title }} - PANOS RULE EXPORTER</title>
+        {% else %}
+        <title>Welcome to PANOS RULE EXPORTER!</title>
+        {% endif %}
+      <title></title>
+    </head>
+    <body>
+        <div>PANOS RULE EXPORTER:
+            <a href="/index">Home</a>
+            <a href="/run_it/child_dg_lab01">Export Rules!</a>
+        </div>
+        <hr>
+        {% block content %}{% endblock %}
+    </body>
+</html>
