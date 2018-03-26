@@ -1,5 +1,5 @@
 xmltodict
-ipaddress
 openpyxl
 requests
 pytz
+pytest
