@@ -40,9 +40,6 @@ jobs:
             . venv/bin/activate
             mkdir test-reports
             cd tests
-            pwd
-            ls -la
-            ls -la ../
             pytest --junitxml=../test-reports/junit.xml
 
       - store_test_results:
