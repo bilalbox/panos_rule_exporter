@@ -50,4 +50,4 @@ Distributed under the MIT license. See [``LICENSE``](LICENSE) for more informati
 
 <!-- Markdown link & img dfn's -->
 [license-badge]: https://img.shields.io/badge/license-MIT-007EC7.svg
-[circleci-badge]: https://circleci.com/gh/bilalbox/panos_rule_exporter/tree/circle_ci.svg?style=shield&circle-token=:circle-token
+[circleci-badge]: https://circleci.com/gh/bilalbox/panos_rule_exporter/tree/circle_ci.svg?style=shield&circle-token=f8d784311a11a51740574e1ea4206054e4d5fd9f
