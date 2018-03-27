@@ -42,7 +42,7 @@ You'll also need to update the [config.py](utils/config.py) with your Panorama i
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
 5. Create a new Pull Request
-
+6. Make sure to add yourself to the list of [AUTHORS](AUTHORS)
 
 ## License
 
