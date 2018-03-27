@@ -1,8 +1,9 @@
 # panos_rule_exporter
 > Tool for exporting PANOS security rulebase to a spreadsheet with address and service objects resolved
 
-[![MIT License][license-badge]](LICENSE)
-[![Circle-CI][circleci-badge]](https://circleci.com/gh/bilalbox/panos_rule_exporter)
+[![MIT License](https://img.shields.io/badge/license-MIT-007EC7.svg)](LICENSE)
+[![Circle-CI](https://circleci.com/gh/bilalbox/panos_rule_exporter.svg?style=shield&circle-token=f8d784311a11a51740574e1ea4206054e4d5fd9f)](https://circleci.com/gh/bilalbox/panos_rule_exporter)
+[![Travis-CI Status](https://travis-ci.org/bilalbox/panos_rule_exporter.svg?branch=master)](https://travis-ci.org/bilalbox/panos_rule_exporter)
 
 This script takes either a Panorama URL or Panorama configuration XML as input as well as device-group name and returns the security rulebase as an Excel spreadsheet with all address and service objects resolved. A sample [Panorama configuration file](tests/get_config_panorama.xml) is included, though you are encouraged to work with your own configuration when testing and extending the script!
 
@@ -48,6 +49,3 @@ You'll also need to update the [config.py](utils/config.py) with your Panorama i
 
 Distributed under the MIT license. See [``LICENSE``](LICENSE) for more information.
 
-<!-- Markdown link & img dfn's -->
-[license-badge]: https://img.shields.io/badge/license-MIT-007EC7.svg
-[circleci-badge]: https://circleci.com/gh/bilalbox/panos_rule_exporter.svg?style=shield&circle-token=f8d784311a11a51740574e1ea4206054e4d5fd9f
