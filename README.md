@@ -2,8 +2,8 @@
 > Tool for exporting PANOS security rulebase to a spreadsheet with address and service objects resolved
 
 [![MIT License](https://img.shields.io/badge/license-MIT-007EC7.svg)](LICENSE)
-[![Circle-CI](https://circleci.com/gh/bilalbox/panos_rule_exporter.svg?style=shield&circle-token=f8d784311a11a51740574e1ea4206054e4d5fd9f)](https://circleci.com/gh/bilalbox/panos_rule_exporter)
-[![Travis-CI Status](https://travis-ci.org/bilalbox/panos_rule_exporter.svg?branch=master)](https://travis-ci.org/bilalbox/panos_rule_exporter)
+[![Circle-CI](https://circleci.com/gh/bilalbox/panos_rule_exporter.svg?circle-token=f8d784311a11a51740574e1ea4206054e4d5fd9f)](https://circleci.com/gh/bilalbox/panos_rule_exporter)
+[![Travis-CI Status](https://travis-ci.org/bilalbox/panos_rule_exporter.svg)](https://travis-ci.org/bilalbox/panos_rule_exporter)
 
 This script takes either a Panorama URL or Panorama configuration XML as input as well as device-group name and returns the security rulebase as an Excel spreadsheet with all address and service objects resolved. A sample [Panorama configuration file](tests/get_config_panorama.xml) is included, though you are encouraged to work with your own configuration when testing and extending the script!
 
