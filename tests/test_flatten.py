@@ -14,7 +14,7 @@ def test_bigger_nested_list():
     assert list(flatten([[[['abc', 'def'], [[[[['a', 'b']]]]], ['c', 'd', 'e']], ['f', 'g']], [[[[[[[[[[[[[[[[['y','z']]]]]]]]]]]]]]]]]])) == ['abc', 'def', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'y', 'z']
 
 
-def flatten():
+def flatten1():
     raise TypeError()
 def test_not_iterable():
     with pytest.raises(TypeError):
