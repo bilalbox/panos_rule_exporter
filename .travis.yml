@@ -8,9 +8,6 @@ services:
 
 before_install:
   - docker build -t bilalbox/panos_rule_exporter .
-  - docker run -dit -p 5000:5000 --name=test_docker bilalbox/panos_rule_exporter
-  - docker ps -a
-  - curl localhost:5000
 
 script:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
