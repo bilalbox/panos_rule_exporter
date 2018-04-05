@@ -2,18 +2,15 @@ language: python
 
 python:
   - "3.6"
-  - "3.6-dev"  # 3.6 development branch
-  - "3.7-dev"  # 3.7 development branch
-
-services:
-  - docker
 
 jobs:
   include:
     - stage: test
+      python: 
+        - "3.6"
       install:
         - pip install -r requirements.txt
-
       script:
         - cd tests
         - pytest
+
