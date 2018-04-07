@@ -38,7 +38,7 @@ def get_config(url: str, api_key: str) -> str:
 
 
 def flatten(c: list) -> list:
-    # Checks if input is a list and returns the value.
+    # Accepts nested list of lists and returns flattened list.
     if not isinstance(c, str):
         for i in c:
             try:
@@ -256,7 +256,6 @@ def main():
 
     device_groups = pan_cfg['config']['devices']['entry']['device-group']['entry']
     dg_tree = [a for a in device_groups if a['@name'] == DEVICE_GROUP][0]
-    nat_tree = dg_tree['post-rulebase']['nat']['rules']['entry']
     sec_tree = dg_tree['post-rulebase']['security']['rules']['entry']
 
     # BUILD CSV FILE FOR SUMMARIZED RESULTS
@@ -316,6 +315,7 @@ def main():
             logging.exception("UNABLE TO EXPORT RULE {} DUE TO {}".format(r, e))
 
     wb.save('{}_{}.xlsx'.format(DEVICE_GROUP, datetime.now().strftime('%Y%m%d_%H%M%S')))
+
 
 
 ##############################################################
