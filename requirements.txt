@@ -1,8 +1,8 @@
 xmltodict
-openpyxl
 requests
-pytz
 pytest
 flask
+flask-wtf
+flask-bootstrap
 flask-excel
 pyexcel-xlsx

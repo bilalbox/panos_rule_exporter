@@ -1,15 +1,23 @@
 FROM python:alpine3.6
 MAINTAINER Nasir Bilal <bilalbox@gmail.com>
 
-ENV FLASK_APP=/usr/src/app/panos_rule_exporter_ui.py
+RUN adduser -D panos
 
-ADD . / /usr/src/app/
+ADD . / /home/panos/app/
 
-RUN cd /usr/src/app; pip install -r requirements.txt
+WORKDIR /home/panos/app
 
-WORKDIR /usr/src/app
+ENV FLASK_APP panos_rule_exporter_ui.py
 
-CMD flask run --host=0.0.0.0
+RUN chown -R panos:panos ./; \
+    cd /home/panos/app; \
+    python -m venv venv; \
+    source venv/bin/activate; \
+    pip install -r requirements.txt; \
+    venv/bin/pip install gunicorn
+
+USER panos
+
+CMD exec venv/bin/gunicorn -b :5000 --access-logfile - --error-logfile - panos_rule_exporter_ui:app
 
 EXPOSE 5000
-
