@@ -9,12 +9,14 @@ This script takes either a Panorama URL or Panorama configuration XML as input a
 
 
 ## Requirements
-- Python 3.6+
 - xmltodict
-- openpyxl
 - requests
-- pytz
 - pytest
+- flask
+- flask-wtf
+- flask-bootstrap
+- flask-excel
+- pyexcel-xlsx
 
 ## Usage
 
@@ -48,4 +50,3 @@ You'll also need to update the [config.py](utils/config.py) with your Panorama i
 ## License
 
 Distributed under the MIT license. See [``LICENSE``](LICENSE) for more information.
-

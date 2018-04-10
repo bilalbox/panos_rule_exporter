@@ -2,12 +2,21 @@ language: python
 
 python:
   - "3.6"
-  - "3.6-dev"  # 3.6 development branch
-  - "3.7-dev"  # 3.7 development branch
 
-install:
-  - pip install -r requirements.txt
+services:
+  - docker
 
-script:
-  - cd tests
-  - pytest
+jobs:
+  include:
+    - stage: test
+      install: pip install -r requirements.txt
+      script: 
+        - cd tests
+        - pytest
+    - stage: deploy
+      before_install: 
+        - docker build -t bilalbox/panos_rule_exporter .
+      script: 
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - docker push bilalbox/panos_rule_exporter
+
