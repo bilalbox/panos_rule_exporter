@@ -1,20 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        {% if title %}
-        <title>{{ title }} - PANOS RULE EXPORTER</title>
-        {% else %}
-        <title>Welcome to PANOS RULE EXPORTER!</title>
-        {% endif %}
-      <title></title>
-    </head>
-    <body>
-        <div>PANOS RULE EXPORTER:
-            <a href="/index">Home</a>
-            <a href="/run_it/child_dg_lab01">Display Exported Rules</a>
-            <a href="/get-file/child_dg_lab01">Download Exported Rules</a>
-        </div>
-        <hr>
-        {% block content %}{% endblock %}
-    </body>
-</html>
+{% extends "bootstrap/base.html" %}
+{% block title %}
+PANOS RULE EXPORTER
+{% endblock %}
+
+{% block navbar %}
+<div class='container'>
+    <div class='row'>
+        <div class="navbar navbar-center">
+        <h3>PANOS RULE EXPORTER</h3>
+        <br><a href="{{ url_for('index') }}">Home</a>
+        <br><a href="{{ url_for('choose') }}">Export</a>
+    </div>
+</div>
+{% endblock %}
+<hr>
+<div class='row'>
+{% block content %}
+{% endblock %}
+</div>
+</div>

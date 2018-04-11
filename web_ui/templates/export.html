@@ -1,46 +1,12 @@
 {% extends "base.html" %}
-
+{% import "bootstrap/wtf.html" as wtf %}
 {% block content %}
-    <div id="scoped-content">
-
-	<style type="text/css" scoped>
-    {% include "export_table.css" %}
-	</style>
-
-    <h1>RULEBASE FOR {{ chosen_dg }}</h1>
-    <div>
-        <a href="{{ url_for('download') }}">Click here for Sheet</a>
-    </div>
-    <div id="tableContainer" class="tableContainer">
-    <table width="100%" class="scrollTable">
-        <thead class="fixedHeader">
-        <tr class="alternateRow">
-            <th>NAME</th>
-            <th>FROM</th>
-            <th>SOURCE</th>
-            <th>(RESOLVED)</th>
-            <th>TO</th>
-            <th>DESTINATION</th>
-            <th>(RESOLVED)</th>
-            <th>APP</th>
-            <th>SERVICE</th>
-            <th>(RESOLVED)</th>
-            <th>CATEGORY</th>
-            <th>ACTION</th>
-            <th>PROFILE-SETTING</th>
-            <th>LOG-SETTING</th>
-        </tr>
-        </thead>
-        <tbody class="scrollContent">
-    {% for row in rows %}
-        <tr class="{{ loop.cycle('normal', 'alternate') }}Row">
-            {% for td in row %}
-            <td>{{ td }}</td>
-            {% endfor %}
-        </tr>
+<form name='Device Group' action="download" method='GET'>
+<select name='Device Group'>
+    {% for dg in dg_list %}
+    <option value="{{dg}}" selected>{{dg}}</option>"
     {% endfor %}
-        </tbody>
-    </table>
-    </div>
-    </div>
+</select>
+<button type="submit">Export!</button>
+</form>
 {% endblock %}
