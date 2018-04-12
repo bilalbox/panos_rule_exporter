@@ -13,29 +13,26 @@ This script takes either a Panorama URL or Panorama configuration XML as input a
 - requests
 - pytest
 - flask
-- flask-wtf
-- flask-bootstrap
 - flask-excel
 - pyexcel-xlsx
 
 ## Usage
 
-Currently you can run the script as-is and it will process the included local [Panorama configuration XML](tests/get_config_panorama.xml). However, you are encouraged to either replace that XML file with one exported from your own Panorama, or pull the configuration live by this code in the main function:
-```python
-def main():
-...
-    with open(PAN_CFG_FILE, 'r') as f:
-        pan_cfg = xmltodict.parse(f.read())['response']['result']
+The current recommended usage for this script is via a docker container. You can build your own via the included Dockerfile:
+```bash
+docker build -t bilalbox/panos_rule_exporter .
 ```
 
-with something like this:
-```python
-def main():
-...
-    pan_cfg = xmltodict.parse(get_config(Config.URL, Config.API_KEY))
-``` 
- 
-You'll also need to update the [config.py](utils/config.py) with your Panorama information.
+Or you can pull the pre-built container from docker hub:
+```bash
+docker pull bilalbox/panos_rule_exporter
+```
+
+Then run the container via:
+```bash
+docker run -i -t -p 5000:5000 --name=test bilalbox/panos_rule_exporter:latest
+```
+Once the container is running, navigate to the docker host IP address at http://{docker-host}:5000 and you will be able to use the web interface to upload configurations and export firewall policy.
 
 
 ## Contributing
