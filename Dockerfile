@@ -1,5 +1,4 @@
 FROM python:alpine3.6
-MAINTAINER Nasir Bilal <bilalbox@gmail.com>
 
 RUN adduser -D panos
 
