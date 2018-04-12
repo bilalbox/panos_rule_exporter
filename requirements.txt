@@ -2,7 +2,5 @@ xmltodict
 requests
 pytest
 flask
-flask-wtf
-flask-bootstrap
 flask-excel
 pyexcel-xlsx

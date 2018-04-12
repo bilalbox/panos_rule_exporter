@@ -1,21 +1,34 @@
-{% extends "bootstrap/base.html" %}
-{% block title %}
-PANOS RULE EXPORTER
-{% endblock %}
-
-{% block navbar %}
-<div class='container'>
-    <div class='row'>
-        <div class="navbar navbar-center">
-        <h3>PANOS RULE EXPORTER</h3>
-        <br><a href="{{ url_for('index') }}">Home</a>
-        <br><a href="{{ url_for('choose') }}">Export</a>
-    </div>
-</div>
-{% endblock %}
-<hr>
-<div class='row'>
-{% block content %}
-{% endblock %}
-</div>
-</div>
+<html>
+    <head>
+        {% block title %}
+            {% if title %}
+            <title>{{ title }} - PANOS RULE EXPORTER</title>
+            {% else %}
+            <title>PANOS RULE EXPORTERg</title>
+            {% endif %}
+        {% endblock %}
+    </head>
+    <body>
+        {% block navbar %}
+            <div>
+                <div align='center'>
+                <h3>PANOS RULE EXPORTER</h3>
+                <br><a href="{{ url_for('index') }}">Home</a>
+                <br><a href="{{ url_for('choose') }}">Download</a>
+                <br><a href="{{ url_for('upload') }}">Upload</a>
+            </div>
+        {% endblock %}
+        <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class=flashes align='center' style="list-style: none;">
+        {% for message in messages %}
+          <li><h3><font color='red'>{{ message }}</font></h3></li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>
