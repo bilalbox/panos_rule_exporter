@@ -10,6 +10,7 @@ ENV FLASK_APP panos_rule_exporter_ui.py
 
 RUN chown -R panos:panos ./; \
     mkdir /home/panos/configs; \
+    chmod -R 777 /home/panos/configs ; \
     cd /home/panos/app; \
     python -m venv venv; \
     source venv/bin/activate; \

@@ -54,7 +54,7 @@ def upload():
             return redirect(request.url)
         if file:
             filename = secure_filename(file.filename)
-            file.save(os.path.join(UPLOAD_FOLDER, filename))
+            file.save(os.path.join(f'{UPLOAD_FOLDER}current_config.xml'))
             flash('File successfully uploaded! Click "Download" to select device-group.')
             return redirect(url_for('index',
                                     filename=filename))

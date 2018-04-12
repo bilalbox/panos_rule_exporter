@@ -7,6 +7,17 @@
 
 This script takes either a Panorama URL or Panorama configuration XML as input as well as device-group name and returns the security rulebase as an Excel spreadsheet with all address and service objects resolved. A sample [Panorama configuration file](tests/get_config_panorama.xml) is included, though you are encouraged to work with your own configuration when testing and extending the script!
 
+## PANOS Compatibility:
+Our script currently only supports configuration that meets the following:
+ - maximum file size of 32MB
+ - PANOS 7.0, 7.1, and 8.0
+ - Panorama configurations (no FW support)
+ - The security rules must be configured in the Post-rulebase
+
+Not currently supported:
+ - NAT rules are not supported
+ - Stand-alone firewalls are not supported
+ - Shared and pre-rulebase rules are not supported
 
 ## Requirements
 - xmltodict
@@ -15,6 +26,7 @@ This script takes either a Panorama URL or Panorama configuration XML as input a
 - flask
 - flask-excel
 - pyexcel-xlsx
+
 
 ## Usage
 
