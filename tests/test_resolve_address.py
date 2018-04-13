@@ -8,31 +8,31 @@ from export import resolve_address
 logging.disable(logging.CRITICAL)
 
 with open('get_config_panorama.xml', 'r') as f:
-    TEST_PAN_CFG = xmltodict.parse(f.read())['response']['result']
-
+    CFG = xmltodict.parse(f.read())['response']['result']
+DG = 'child_dg_lab01'
 
 def test_nonexistent_object():
-    assert resolve_address('nobody_knows_me', TEST_PAN_CFG) == ['unknown']
+    assert resolve_address('nobody_knows_me', CFG, DG) == ['unknown']
 
 
 def test_any():
-    assert resolve_address('any', TEST_PAN_CFG) == 'any'
+    assert resolve_address('any', CFG, DG) == 'any'
 
 
 def test_unnamed_ip_address():
-    assert resolve_address('10.1.1.1/32', TEST_PAN_CFG) == '10.1.1.1/32'
+    assert resolve_address('10.1.1.1/32', CFG, DG) == '10.1.1.1/32'
 
 
 def test_host_address_object():
-    assert resolve_address('ae_file_071', TEST_PAN_CFG) == ['201.93.236.81/32']
+    assert resolve_address('ae_file_071', CFG, DG) == ['201.93.236.81/32']
 
 
 def test_subnet_address_object():
-    assert resolve_address('n_10.2.2.0_24', TEST_PAN_CFG) == ['10.2.2.0/24']
+    assert resolve_address('n_10.2.2.0_24', CFG, DG) == ['10.2.2.0/24']
 
 
 def test_ip_range_address_object():
-    assert resolve_address('fj_wan_011', TEST_PAN_CFG) == [
+    assert resolve_address('fj_wan_011', CFG, DG) == [
          '21.162.177.100', '21.162.177.101', '21.162.177.102', '21.162.177.103', '21.162.177.104', '21.162.177.105',
          '21.162.177.106', '21.162.177.107', '21.162.177.108', '21.162.177.109', '21.162.177.110', '21.162.177.111',
          '21.162.177.112', '21.162.177.113', '21.162.177.114', '21.162.177.115', '21.162.177.116', '21.162.177.117',
@@ -54,15 +54,15 @@ def test_ip_range_address_object():
 
 
 def test_fqdn():
-    assert resolve_address('es007.lab.local', TEST_PAN_CFG) == ['dynamic']
+    assert resolve_address('es007.lab.local', CFG, DG) == ['dynamic']
 
 
 def test_shared_address_group():
-    assert resolve_address('gp_rfc1918_nets', TEST_PAN_CFG) == ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16']
+    assert resolve_address('gp_rfc1918_nets', CFG, DG) == ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16']
 
 
 def test_device_group_address_group_nested():
-    assert resolve_address('gp_allservers_01', TEST_PAN_CFG) == [
+    assert resolve_address('gp_allservers_01', CFG, DG) == [
         '116.208.87.231/32', '64.166.244.218/32', '106.8.22.166/32', '108.66.169.73/32', '51.116.2.245/32',
         '139.19.119.218/32', '189.214.216.32/32', '188.233.51.195/32', '178.204.160.19/32', '61.141.109.68/32',
         '197.137.183.238/32', '176.83.170.151/32', '36.239.237.196/32', '131.126.184.9/32', '15.37.102.124/32',
@@ -77,4 +77,4 @@ def test_device_group_address_group_nested():
 
 
 def test_external_dynamic_list():
-    assert resolve_address('edl_sslabuse_ipv4_lab01', TEST_PAN_CFG) == ['dynamic']
+    assert resolve_address('edl_sslabuse_ipv4_lab01', CFG, DG) == ['dynamic']
