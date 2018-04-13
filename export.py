@@ -3,7 +3,6 @@
 ##############################################################
 # IMPORTS
 ##############################################################
-from utils.config import Config
 import xmltodict
 import requests
 from datetime import datetime
@@ -70,7 +69,7 @@ def extract_ip_range(start: str, end: str) -> list:
     return result
 
 
-def resolve_service(service: str, pan_cfg: dict) -> list:
+def resolve_service(service: str, pan_cfg: dict, device_group: str) -> list:
     # Queries services and service-groups for object matching this string.
 
     def singleton(x):
@@ -82,7 +81,7 @@ def resolve_service(service: str, pan_cfg: dict) -> list:
         sh_svc_tree = pan_cfg['config']['shared'].get('service', {}).get('entry')
         sh_sg_tree = pan_cfg['config']['shared'].get('service-group', {}).get('entry')
         device_groups = pan_cfg['config']['devices']['entry']['device-group']['entry']
-        dg_tree = [a for a in device_groups if a['@name'] == DEVICE_GROUP][0]
+        dg_tree = [a for a in device_groups if a['@name'] == device_group][0]
         dg_svc_tree = dg_tree.get('service', {}).get('entry')
         dg_sg_tree = dg_tree.get('service-group', {}).get('entry')
         try:
@@ -142,7 +141,7 @@ def resolve_service(service: str, pan_cfg: dict) -> list:
     return service
 
 
-def resolve_address(address: str, pan_cfg: dict) -> list:
+def resolve_address(address: str, pan_cfg: dict, device_group: str) -> list:
     # Queries address-group for object matching this string.
 
     def singleton(x):
@@ -150,12 +149,12 @@ def resolve_address(address: str, pan_cfg: dict) -> list:
             x = 'dynamic'
         return validate_ip(x) or x in ('any', 'dynamic', 'unknown')
 
-    def inner_resolve(address, pan_cfg):
+    def inner_resolve(address):
         sh_add_tree = pan_cfg['config']['shared'].get('address', {}).get('entry')
         sh_ag_tree = pan_cfg['config']['shared'].get('address-group', {}).get('entry')
         sh_edl_tree = pan_cfg['config']['shared'].get('external-list', {}).get('entry')
         device_groups = pan_cfg['config']['devices']['entry']['device-group']['entry']
-        dg_tree = [a for a in device_groups if a['@name'] == DEVICE_GROUP][0]
+        dg_tree = [a for a in device_groups if a['@name'] == device_group][0]
         dg_add_tree = dg_tree.get('address', {}).get('entry')
         dg_ag_tree = dg_tree.get('address-group', {}).get('entry')
 
@@ -233,12 +232,12 @@ def resolve_address(address: str, pan_cfg: dict) -> list:
         if type(address) == list:
             address_list = []
             for a in address:
-                a = inner_resolve(a, pan_cfg)
+                a = inner_resolve(a)
                 address_list.append(a)
             address = list(address_list)
         # Otherwise, try to resolve single address
         else:
-            address = inner_resolve(address, pan_cfg)
+            address = inner_resolve(address)
         address = list(flatten(address))
 
     return address
@@ -252,7 +251,10 @@ def main():
     logging.basicConfig(level=logging.INFO, filename='exceptions.log')
 
     with open(PAN_CFG_FILE, 'r') as f:
-        pan_cfg = xmltodict.parse(f.read())['response']['result']
+        parsed_cfg = xmltodict.parse(f.read())
+        pan_cfg = parsed_cfg.get('response', {}).get('result')
+        if not pan_cfg:
+            pan_cfg = parsed_cfg
 
     device_groups = pan_cfg['config']['devices']['entry']['device-group']['entry']
     dg_tree = [a for a in device_groups if a['@name'] == DEVICE_GROUP][0]
@@ -281,17 +283,17 @@ def main():
     for r in sec_tree:
         try:
             # resolve source address(es)
-            src_ip = resolve_address(r['source'].get('member'), pan_cfg)
+            src_ip = resolve_address(r['source'].get('member'), pan_cfg, DEVICE_GROUP)
 
             # resolve destination address(es)
-            dst_ip = resolve_address(r['destination'].get('member'), pan_cfg)
+            dst_ip = resolve_address(r['destination'].get('member'), pan_cfg, DEVICE_GROUP)
 
             # Resolve destination port object(s) to a list of ports
             if type(r['service']) == list:
                 dport = r['service'][0].get('member')
             else:
                 dport = r['service'].get('member')
-            dst_port = resolve_service(dport, pan_cfg)
+            dst_port = resolve_service(dport, pan_cfg, DEVICE_GROUP)
 
             # Fill out table row with all rule details
             row = (

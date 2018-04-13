@@ -26,7 +26,10 @@ def choose():
     PAN_CFG_FILE = f'{UPLOAD_FOLDER}current_config.xml'
     try:
         with open(PAN_CFG_FILE, 'r') as f:
-            pan_cfg = xmltodict.parse(f.read())['response']['result']
+            parsed_cfg = xmltodict.parse(f.read())
+            pan_cfg = parsed_cfg.get('response', {}).get('result')
+            if not pan_cfg:
+                pan_cfg = parsed_cfg
 
         dg_list = [
             a['@name'] for a in pan_cfg['config']
@@ -65,7 +68,10 @@ def download():
     PAN_CFG_FILE = f'{UPLOAD_FOLDER}current_config.xml'
     chosen_dg = request.args.get("Device Group")
     with open(PAN_CFG_FILE, 'r') as f:
-        pan_cfg = xmltodict.parse(f.read())['response']['result']
+        parsed_cfg = xmltodict.parse(f.read())
+        pan_cfg = parsed_cfg.get('response', {}).get('result')
+        if not pan_cfg:
+            pan_cfg = parsed_cfg
     print("your chosen dg is: ".upper(), chosen_dg)
     device_groups = pan_cfg['config']['devices']['entry']['device-group']['entry']
     dg_tree = [a for a in device_groups if a['@name'] == chosen_dg][0]
@@ -92,17 +98,17 @@ def download():
     for r in sec_tree:
         try:
             # resolve source address(es)
-            src_ip = export.resolve_address(r['source'].get('member'), pan_cfg)
+            src_ip = export.resolve_address(r['source'].get('member'), pan_cfg, chosen_dg)
 
             # resolve destination address(es)
-            dst_ip = export.resolve_address(r['destination'].get('member'), pan_cfg)
+            dst_ip = export.resolve_address(r['destination'].get('member'), pan_cfg, chosen_dg)
 
             # Resolve destination port object(s) to a list of ports
             if type(r['service']) == list:
                 dport = r['service'][0].get('member')
             else:
                 dport = r['service'].get('member')
-            dst_port = export.resolve_service(dport, pan_cfg)
+            dst_port = export.resolve_service(dport, pan_cfg, chosen_dg)
 
             # Fill out table row with all rule details
             row = (
