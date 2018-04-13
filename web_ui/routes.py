@@ -98,17 +98,17 @@ def download():
     for r in sec_tree:
         try:
             # resolve source address(es)
-            src_ip = export.resolve_address(r['source'].get('member'), pan_cfg)
+            src_ip = export.resolve_address(r['source'].get('member'), pan_cfg, chosen_dg)
 
             # resolve destination address(es)
-            dst_ip = export.resolve_address(r['destination'].get('member'), pan_cfg)
+            dst_ip = export.resolve_address(r['destination'].get('member'), pan_cfg, chosen_dg)
 
             # Resolve destination port object(s) to a list of ports
             if type(r['service']) == list:
                 dport = r['service'][0].get('member')
             else:
                 dport = r['service'].get('member')
-            dst_port = export.resolve_service(dport, pan_cfg)
+            dst_port = export.resolve_service(dport, pan_cfg, chosen_dg)
 
             # Fill out table row with all rule details
             row = (
