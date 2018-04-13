@@ -3,7 +3,6 @@
 ##############################################################
 # IMPORTS
 ##############################################################
-from utils.config import Config
 import xmltodict
 import requests
 from datetime import datetime
@@ -252,7 +251,10 @@ def main():
     logging.basicConfig(level=logging.INFO, filename='exceptions.log')
 
     with open(PAN_CFG_FILE, 'r') as f:
-        pan_cfg = xmltodict.parse(f.read())['response']['result']
+        parsed_cfg = xmltodict.parse(f.read())
+        pan_cfg = parsed_cfg.get('response', {}).get('result')
+        if not pan_cfg:
+            pan_cfg = parsed_cfg
 
     device_groups = pan_cfg['config']['devices']['entry']['device-group']['entry']
     dg_tree = [a for a in device_groups if a['@name'] == DEVICE_GROUP][0]

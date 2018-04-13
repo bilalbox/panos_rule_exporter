@@ -26,7 +26,10 @@ def choose():
     PAN_CFG_FILE = f'{UPLOAD_FOLDER}current_config.xml'
     try:
         with open(PAN_CFG_FILE, 'r') as f:
-            pan_cfg = xmltodict.parse(f.read())['response']['result']
+            parsed_cfg = xmltodict.parse(f.read())
+            pan_cfg = parsed_cfg.get('response', {}).get('result')
+            if not pan_cfg:
+                pan_cfg = parsed_cfg
 
         dg_list = [
             a['@name'] for a in pan_cfg['config']
@@ -65,7 +68,10 @@ def download():
     PAN_CFG_FILE = f'{UPLOAD_FOLDER}current_config.xml'
     chosen_dg = request.args.get("Device Group")
     with open(PAN_CFG_FILE, 'r') as f:
-        pan_cfg = xmltodict.parse(f.read())['response']['result']
+        parsed_cfg = xmltodict.parse(f.read())
+        pan_cfg = parsed_cfg.get('response', {}).get('result')
+        if not pan_cfg:
+            pan_cfg = parsed_cfg
     print("your chosen dg is: ".upper(), chosen_dg)
     device_groups = pan_cfg['config']['devices']['entry']['device-group']['entry']
     dg_tree = [a for a in device_groups if a['@name'] == chosen_dg][0]
